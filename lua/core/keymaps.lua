@@ -31,8 +31,6 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
-
-
 -- My keymaps
 
 vim.keymap.set('n', '<C-d>', '<C-d>zz', { silent = true })
@@ -52,3 +50,4 @@ vim.keymap.set('v', '∆', ":m'>+1<CR>`<my`>gv=gv", { silent = true })
 vim.keymap.set('v', '˚', ':m-2<CR>==gv', { silent = true })
 
 vim.keymap.set({ 'n', 'i' }, '<C-s>', '<cmd>write<cr>', {})
+vim.keymap.set('n', '<CR>', 'o<Esc>', {})
