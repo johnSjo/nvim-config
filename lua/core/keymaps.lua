@@ -50,4 +50,6 @@ vim.keymap.set('v', '∆', ":m'>+1<CR>`<my`>gv=gv", { silent = true })
 vim.keymap.set('v', '˚', ':m-2<CR>==gv', { silent = true })
 
 vim.keymap.set({ 'n', 'i' }, '<C-s>', '<cmd>write<cr>', {})
+vim.keymap.set('v', 'p', '"_dP', {})
+
 vim.keymap.set('n', '<CR>', 'o<Esc>', {})
