@@ -88,3 +88,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.opt.foldmethod = 'indent'
 vim.opt.foldlevelstart = 99
 vim.opt.linebreak = true
+
+vim.filetype.add {
+    extension = {
+        mdx = 'mdx',
+    },
+}

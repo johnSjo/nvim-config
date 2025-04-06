@@ -198,7 +198,7 @@ return {
             ts_ls = {},
             prettier = {},
             stylua = {},
-            --
+            mdx_analyzer = {},
 
             lua_ls = {
                 -- cmd = { ... },
