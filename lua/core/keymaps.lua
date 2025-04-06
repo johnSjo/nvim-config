@@ -53,3 +53,4 @@ vim.keymap.set({ 'n', 'i' }, '<C-s>', '<cmd>write<cr>', {})
 vim.keymap.set('v', 'p', '"_dP', {})
 
 vim.keymap.set('n', '<CR>', 'o<Esc>', {})
+vim.keymap.set('n', '<leader>e', ':!eslint_d --fix %<CR>', { silent = true })
