@@ -14,9 +14,4 @@ return {
     -- "gc" to comment visual regions/lines
     { 'numToStr/Comment.nvim', opts = {} },
     { 'mg979/vim-visual-multi', {} },
-    {
-        'davidmh/mdx.nvim',
-        config = true,
-        dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    },
 }
