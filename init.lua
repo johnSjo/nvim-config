@@ -27,6 +27,8 @@ require('lazy').setup {
     require 'plugins.lsp',
     require 'plugins.lazydev',
     require 'plugins.lint',
+    require 'plugins.copilot',
+    require 'plugins.copilot-chat',
 
     -- Plugins not yet activated
     -- require 'kickstart.plugins.debug',
