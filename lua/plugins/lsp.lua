@@ -171,6 +171,13 @@ return {
         --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
         local capabilities = vim.lsp.protocol.make_client_capabilities()
         capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+        -- NOTE: mason-lspconfig v2 dropped the `handlers`/`.setup()` API in favour of
+        -- `vim.lsp.config()` + `automatic_enable` (see its CHANGELOG.md, 2025-05-06).
+        -- Applying capabilities per-server below via `vim.lsp.config(name, opts)` instead.
+        vim.lsp.config('*', { capabilities = capabilities })
+
+        local vue_language_server_path = vim.fn.expand '$MASON/packages/vue-language-server' .. '/node_modules/@vue/language-server'
+        local vue_tsdk_path = vim.fn.expand '$MASON/packages/vue-language-server' .. '/node_modules/typescript/lib'
 
         -- Enable the following language servers
         --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -194,11 +201,46 @@ return {
             --
             -- But for many setups, the LSP (`ts_ls`) will work just fine
             -- tsserver = {},
-            prettierd = {},
-            ts_ls = {},
-            prettier = {},
+            ts_ls = {
+                filetypes = {
+                    'typescript',
+                    'javascript',
+                    'javascriptreact',
+                    'typescriptreact',
+                    -- 'vue' removed from here (vtsls handles vue now)
+                },
+            },
             stylua = {},
             mdx_analyzer = {},
+            vue_ls = {
+                -- NOTE: hybrid-mode vue-language-server (2.x) requires this or it
+                -- crashes on initialize with "Cannot read properties of undefined (reading 'typescript')".
+                init_options = {
+                    typescript = {
+                        tsdk = vue_tsdk_path,
+                    },
+                },
+            },
+            vtsls = { -- NOTE: doing this for Nouryon project with its old vue version.
+                filetypes = { 'vue' },
+                settings = {
+                    typescript = {},
+                    javascript = {},
+                    vtsls = {
+                        tsserver = {
+                            log = 'verbose',
+                            globalPlugins = {
+                                {
+                                    name = '@vue/typescript-plugin',
+                                    location = vue_language_server_path,
+                                    languages = { 'vue' },
+                                    configNamespace = 'typescript',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
 
             lua_ls = {
                 -- cmd = { ... },
@@ -232,22 +274,21 @@ return {
         local ensure_installed = vim.tbl_keys(servers or {})
         vim.list_extend(ensure_installed, {
             'stylua', -- Used to format Lua code
+            'prettierd',
+            'prettier',
+            { 'vue-language-server', version = '2.2.10' }, -- NOTE: doing this for Nouryon project with its old vue version.
         })
         require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+        -- Apply our overrides before mason-lspconfig auto-enables installed servers,
+        -- so `automatic_enable`'s `vim.lsp.enable()` picks up this config instead of bare defaults.
+        for server_name, server_opts in pairs(servers) do
+            vim.lsp.config(server_name, server_opts)
+        end
+
         require('mason-lspconfig').setup {
             ensure_installed = {},
-            automatic_installation = false,
-            handlers = {
-                function(server_name)
-                    local server = servers[server_name] or {}
-                    -- This handles overriding only values explicitly passed
-                    -- by the server configuration above. Useful when disabling
-                    -- certain features of an LSP (for example, turning off formatting for ts_ls)
-                    server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-                    require('lspconfig')[server_name].setup(server)
-                end,
-            },
+            automatic_enable = true,
         }
     end,
 }
